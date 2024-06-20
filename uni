@@ -1,0 +1,78 @@
+Sub ExtractTrust3000Data()
+    Dim accountNumber As String
+    Dim accountName As String
+    Dim marketValue As String
+    Dim estAnnualIncome As String
+    Dim beneficiaryName As String
+    Dim distributionTickler As String
+    Dim grossIncome As String
+    Dim fees As String
+    Dim xlApp As Object
+    Dim xlBook As Object
+    Dim xlSheet As Object
+    
+    ' Initialize Excel Application
+    Set xlApp = CreateObject("Excel.Application")
+    xlApp.Visible = True
+    Set xlBook = xlApp.Workbooks.Add
+    Set xlSheet = xlBook.Sheets(1)
+    
+    ' Define headers in Excel
+    xlSheet.Cells(1, 1).Value = "Account Number"
+    xlSheet.Cells(1, 2).Value = "Account Name"
+    xlSheet.Cells(1, 3).Value = "Market Value"
+    xlSheet.Cells(1, 4).Value = "Estimated Annual Income"
+    xlSheet.Cells(1, 5).Value = "Beneficiary Name"
+    xlSheet.Cells(1, 6).Value = "Distribution Tickler (%)"
+    xlSheet.Cells(1, 7).Value = "Gross Income (Last Year)"
+    xlSheet.Cells(1, 8).Value = "Fees (Bank/Co-Trustee)"
+    
+    ' Request the account number from the user
+    accountNumber = InputBox("Enter the Account Number:")
+    
+    ' Navigate and extract data from CA screen
+    ThisScreen.SendKeys "CA" & "{Enter}"
+    ThisScreen.WaitForHostSettle(2000)
+    
+    ' Find and extract data on CA screen
+    accountName = ThisScreen.GetText(2, 10, 20) ' Example coordinates
+    marketValue = ThisScreen.GetText(4, 30, 15) ' Example coordinates
+    estAnnualIncome = ThisScreen.GetText(6, 30, 15) ' Example coordinates
+    
+    ' Navigate to TI screen
+    ThisScreen.SendKeys "TI" & "{Enter}"
+    ThisScreen.WaitForHostSettle(2000)
+    
+    ' Find and extract data on TI screen
+    beneficiaryName = ThisScreen.GetText(2, 10, 20) ' Example coordinates
+    distributionTickler = ThisScreen.GetText(4, 30, 10) ' Example coordinates
+    
+    ' Navigate to TR screen
+    ThisScreen.SendKeys "TR" & "{Enter}"
+    ThisScreen.WaitForHostSettle(2000)
+    
+    ' Find and extract data on TR screen
+    grossIncome = ThisScreen.GetText(3, 25, 15) ' Example coordinates
+    fees = ThisScreen.GetText(5, 25, 15) ' Example coordinates
+    
+    ' Write extracted data to Excel
+    xlSheet.Cells(2, 1).Value = accountNumber
+    xlSheet.Cells(2, 2).Value = accountName
+    xlSheet.Cells(2, 3).Value = marketValue
+    xlSheet.Cells(2, 4).Value = estAnnualIncome
+    xlSheet.Cells(2, 5).Value = beneficiaryName
+    xlSheet.Cells(2, 6).Value = distributionTickler
+    xlSheet.Cells(2, 7).Value = grossIncome
+    xlSheet.Cells(2, 8).Value = fees
+    
+    ' Optional: Save the Excel file
+    xlBook.SaveAs "C:\Path\To\Save\Trust3000Data.xlsx"
+    
+    ' Cleanup
+    Set xlSheet = Nothing
+    Set xlBook = Nothing
+    Set xlApp = Nothing
+    
+    ' Notify user
+    MsgBox "Data extraction complete and saved to Excel!"
+End Sub
